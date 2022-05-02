@@ -19,17 +19,14 @@ class ClassState extends React.Component {
   //   console.log('did') 
   // }
   componentDidUpdate() {
-    console.log('actualización');
+    console.log(this.state.value)
     if (this.state.loading) {
       setTimeout(() => {
-        console.log("haciendo la validacion")
-        if (this.state.value !== SECURITY_CODE) {
-          this.setState({error: true});
-        } else if ((this.state.value === SECURITY_CODE) && this.state.error) {
-          this.setState({error: false});
-          this.setState({loading: false});
+        if (this.state.value === SECURITY_CODE) {
+          this.setState({loading: false, error: false});
+        } else {
+          this.setState({loading: false, error: true});
         }
-        this.setState({loading: false});
       }, 1000)
     }
   }
@@ -41,7 +38,7 @@ class ClassState extends React.Component {
       <div>
         <h2>Eliminar {this.props.name}</h2>
         <p>Porfavor, escribe el código de seguridad</p>
-        {error && (
+        {(error && !loading) && (
           <p>Hubo un error</p>
         )}
         {loading && (
@@ -55,7 +52,7 @@ class ClassState extends React.Component {
           }}
         />
         <button 
-          onClick={() => this.setState(prevState => ({loading: !prevState.loading}))}
+          onClick={() => this.setState({loading: true})}
         >Comprobar</button>
       </div>
     );
