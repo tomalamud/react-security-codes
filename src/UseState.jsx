@@ -12,17 +12,37 @@ function UseState({ name }) {
   
   const SECURITY_CODE = 'paradigma';
   
-  console.log(state)
+  const onConfirm = () => {
+    setState({ ...state, loading: false, confirmed: true  });
+  };
+  const onError = () => {
+    setState({ ...state, error: true, loading: false});
+  };
+  const onConfirmPrevError = () => {
+    setState({ ...state, error: false, loading: false, confirmed: true});
+  };
+  const onListen = (event) => {
+    setState({...state, value: event.target.value});
+  };
+  const onDelete = () => {
+    setState({...state, deleted: true});
+  };
+  const onRestart = () => {
+    setState({...state, confirmed: false, delete: false, value: ''});
+  };
+  const onLoading = () => {
+    setState({...state, loading: true});
+  };
 
   React.useEffect(() => {
     if (state.loading) {
       setTimeout(() => {
         if (state.value !== SECURITY_CODE) {
-          setState({ ...state, error: true, loading: false});
+          onError()
         } else if ((state.value === SECURITY_CODE) && state.error) {
-          setState({ ...state, error: false, loading: false, confirmed: true});
+          onConfirmPrevError()
         } else {
-          setState({ ...state, loading: false, confirmed: true  })
+          onConfirm()
         }
       }, 1000)
     }
@@ -46,42 +66,28 @@ function UseState({ name }) {
           placeholder="Código de seguridad"
           value={state.value}
           onChange={(event) => {
-            setState({...state, value: event.target.value})
+            onListen(event);
           }}
         />
-        <button onClick={() => {
-          setState({...state, loading: true})
-        }}>Comprobar</button>
+        <button onClick={onLoading}>Comprobar</button>
       </div>
     );
   } else if (state.confirmed && !state.deleted) {
     return (
       <div>
         <p>Pedimos confirmación ¿Estás seguro?</p>
-        <button onClick={()=> {
-          setState({...state, deleted: true})
-        }}
-        >Si</button>
-        <button onClick={()=> {
-          setState({...state, confirmed: false, value: ''})
-        }}>No</button>
+        <button onClick={onDelete}>Si</button>
+        <button onClick={onRestart}>No</button>
       </div>
     );
   } else {
     return (
       <div>
         <p>Eliminado con éxito</p>
-        <button onClick={()=> {
-          setState({
-            ...state, 
-            confirmed: false, 
-            deleted: false, 
-            value: '',
-          })
-        }}>Resetear</button>
+        <button onClick={onRestart}>Resetear</button>
       </div>
-    )
-  }
-}
+    );
+  };
+};
 
-export { UseState }
+export { UseState };
