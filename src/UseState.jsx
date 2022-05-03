@@ -1,5 +1,6 @@
 import React from "react";
 
+const SECURITY_CODE = 'paradigma';
 
 function UseState({ name }) {
   const [state, setState] = React.useState({
@@ -9,9 +10,7 @@ function UseState({ name }) {
     confirmed: false,
     deleted: false,
   });
-  
-  const SECURITY_CODE = 'paradigma';
-  
+
   const onConfirm = () => {
     setState({ ...state, loading: false, confirmed: true  });
   };
@@ -21,20 +20,21 @@ function UseState({ name }) {
   const onConfirmPrevError = () => {
     setState({ ...state, error: false, loading: false, confirmed: true});
   };
-  const onListen = (event) => {
-    setState({...state, value: event.target.value});
+  const onWrite = ({ target: { value } }) => {
+    setState({...state, value: value});
   };
   const onDelete = () => {
     setState({...state, deleted: true});
   };
-  const onRestart = () => {
-    setState({...state, confirmed: false, delete: false, value: ''});
+  const onReset = () => {
+    setState({...state, confirmed: false, deleted: false, value: ''});
   };
   const onLoading = () => {
     setState({...state, loading: true});
   };
 
   React.useEffect(() => {
+    console.log(state.loading)
     if (state.loading) {
       setTimeout(() => {
         if (state.value !== SECURITY_CODE) {
@@ -57,7 +57,7 @@ function UseState({ name }) {
         {state.error && (
           <p>Hubo un error, el código es incorrecto</p>
         )}
-  
+        
         {state.loading && (
           <p>Cargando...</p>
         )}
@@ -65,9 +65,7 @@ function UseState({ name }) {
         <input 
           placeholder="Código de seguridad"
           value={state.value}
-          onChange={(event) => {
-            onListen(event);
-          }}
+          onChange={onWrite}
         />
         <button onClick={onLoading}>Comprobar</button>
       </div>
@@ -77,17 +75,18 @@ function UseState({ name }) {
       <div>
         <p>Pedimos confirmación ¿Estás seguro?</p>
         <button onClick={onDelete}>Si</button>
-        <button onClick={onRestart}>No</button>
+        <button onClick={onReset}>No</button>
       </div>
     );
   } else {
     return (
       <div>
         <p>Eliminado con éxito</p>
-        <button onClick={onRestart}>Resetear</button>
+        <button onClick={onReset}>Resetear</button>
       </div>
     );
   };
 };
 
 export { UseState };
+
